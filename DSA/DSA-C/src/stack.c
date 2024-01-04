@@ -63,7 +63,7 @@ int peek()
 
 int main()
 {
-    int choice, data;
+    int choice;
     while (1)
     {
         printf("Options:\n(1) to push\n(2) to pop\n(3) to display\n(4) total number of elements\n(5) to peek\n(6) to exit\nEnter your choice: ");

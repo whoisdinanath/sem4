@@ -1,72 +1,32 @@
-# 'make'        build executable file 'main'
-# 'make clean'  removes all .o and executable files
+# Directories
+SRC_DIR := src
+BIN_DIR := bin
 
-# define the C compiler to use
-CC = gcc
+# Compiler and flags
+CC := gcc
+CFLAGS := -Wall
 
-# define any compile-time flags
-CFLAGS	:= -std=c11 -Wall -Wextra -g
+# Find all source files in SRC_DIR
+SRCS := $(wildcard $(SRC_DIR)/*.c)
 
-# define library paths in addition to /usr/lib
-#   if I wanted to include libraries not in /usr/lib I'd specify
-#   their path using -Lpath, something like: -lGL -lglfw -lGLEW
-LFLAGS = 	
+# Create list of corresponding object files in BIN_DIR
+OBJS := $(patsubst $(SRC_DIR)/%.c,$(BIN_DIR)/%,$(SRCS))
 
-# define output directory
-OUTPUT	:= bin
+# Rule to compile each source file to executable
+$(BIN_DIR)/%: $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) $< -o $@
 
-# define source directory
-SRC		:= src
+# Target to compile all source files
+all: $(OBJS)
+	@echo "Compilation successful!"
 
-# define include directory
-INCLUDE	:= include
+run:
+	$(MAKE) all
+	clear
+	$(BIN_DIR)/$(FILE)
 
-# define lib directory
-LIB		:= lib
-
-MAIN	:= main
-SOURCEDIRS	:= $(shell find $(SRC) -type d)
-INCLUDEDIRS	:= $(shell find $(INCLUDE) -type d)
-LIBDIRS		:= $(shell find $(LIB) -type d)
-FIXPATH = $1
-RM = rm -f
-MD	:= mkdir -p
-
-# define any directories containing header files other than /usr/include
-INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
-
-# define the C libs
-LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%))
-
-# define the C source files
-SOURCES		:= $(wildcard $(patsubst %,%/*.c, $(SOURCEDIRS)))
-
-# define the C object files 
-OBJECTS		:= $(SOURCES:.c=.o)
-
-OUTPUTMAIN	:= $(call FIXPATH,$(OUTPUT)/$(MAIN))
-
-all: $(OUTPUT) $(MAIN)
-	@echo Executing 'all' complete!
-
-$(OUTPUT):
-	$(MD) $(OUTPUT)
-
-$(MAIN): $(OBJECTS) 
-	$(CC) $(CFLAGS) $(INCLUDES) -o $(OUTPUTMAIN) $(OBJECTS) $(LFLAGS) $(LIBS)
-
-# this is a suffix replacement rule for building .o's from .c's
-# it uses automatic variables $<: the name of the prerequisite of
-# the rule(a .c file) and $@: the name of the target of the rule (a .o file) 
-.c.o:
-	$(CC) $(CFLAGS) $(INCLUDES) -c $<  -o $@
-
-.PHONY: clean
+# Target to clean executables
 clean:
-	$(RM) $(OUTPUTMAIN)
-	$(RM) $(call FIXPATH,$(OBJECTS))
-	@echo Cleanup complete!
+	rm -f $(BIN_DIR)/*
 
-run: all
-	./$(OUTPUTMAIN)
-	@echo Executing 'run: all' complete!
+.PHONY: all clean

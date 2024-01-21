@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-#define f(x) (x * x * x - 2 * x - 5);
+#define f(x) (x * log10(x) - 1.2);
 
 void printHeader()
 {
@@ -14,15 +14,15 @@ void main()
 {
     float x0, x1, x2, f0, f1, f2, e;
     int step = 1, N;
-    printf("Enter initial guesses x1 and x2: ");
-    scanf("%f%f", &x1, &x2);
+    printf("Enter initial guesses x0 and x1: ");
+    scanf("%f%f", &x0, &x1);
     printf("Enter the maximum tolerance: ");
     scanf("%f", &e);
     printf("Enter the maximum number of iteration: ");
     scanf("%d", &N);
 
     printHeader();
-    printf("\nStep\t\tx0\t\tx1\t\tx2\t\tf{x2}\n");
+    printf("\n\tStep\tx0\t\tx1\t\tx2\t\tf{x2}\n");
     printHeader();
     do
     {

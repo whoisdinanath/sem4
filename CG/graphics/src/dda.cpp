@@ -33,7 +33,8 @@ int main()
     int gdrive = DETECT;
     int gmode;
 
-    initwindow(640, 480, "DinanathP(THA078BEI010)", 100, 100);
+    // initwindow(640, 480, "DinanathP(THA078BEI010)", 100, 100);
+    initgraph(&gdrive, &gmode, NULL);
     int x1, y1, x2, y2;
 
     printf("Enter the value of x1 and y1: ");

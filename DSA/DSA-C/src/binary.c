@@ -35,6 +35,7 @@ Node *searchNode(Node *root, int data)
     {
         root->right = searchNode(root->right, data);
     }
+    return root;
 }
 
 Node *insertNode(Node *root, int data)
@@ -160,7 +161,7 @@ Node *deleteNode(Node *root, int data)
 
 int main()
 {
-    Node *root = createNode(100);
+    Node *main = createNode(100);
     // write a menu based program for BST
     // 1. Insert
     // 2. Search
@@ -181,21 +182,21 @@ int main()
         case 1:
             printf("\nEnter the data to be inserted: ");
             scanf("%d", &data);
-            temp = insertNode(root, data);
+            temp = insertNode(main, data);
             printf("\nInorder: ");
-            printInOrder(root);
+            printInOrder(main);
             printf("\nPostorder: ");
-            printPostOrder(root);
+            printPostOrder(main);
             printf("\nPreorder: ");
-            printPreOrder(root);
+            printPreOrder(main);
             break;
         case 2:
             printf("\nEnter the data to be searched: ");
             scanf("%d", &data);
-            temp = searchNode(root, data);
+            temp = searchNode(main, data);
             if (temp != NULL)
             {
-                printf("\n%d found in the tree.\n", temp->data);
+                printf("\n%d found in the tree.\n", data);
             }
             else
             {
@@ -206,22 +207,22 @@ int main()
         case 3:
             printf("\nEnter the data to be deleted: ");
             scanf("%d", &data);
-            temp = deleteNode(root, data);
-            printf("\nDeleted %d from the tree.\n", temp->data);
+            temp = deleteNode(main, data);
+            printf("\nDeleted %d from the tree.\n", data);
             printf("\nInorder: ");
-            printInOrder(root);
+            printInOrder(main);
             printf("\nPostorder: ");
-            printPostOrder(root);
+            printPostOrder(main);
             printf("\nPreorder: ");
-            printPreOrder(root);
+            printPreOrder(main);
             break;
         case 4:
             printf("\nInorder: ");
-            printInOrder(root);
+            printInOrder(main);
             printf("\nPreorder: ");
-            printPreOrder(root);
+            printPreOrder(main);
             printf("\nPostorder: ");
-            printPostOrder(root);
+            printPostOrder(main);
             break;
         case 5:
             exit(0);

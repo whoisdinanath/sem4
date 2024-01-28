@@ -1,70 +1,169 @@
 #include <stdio.h>
-#include <math.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
-#define MAX 10
+#define MAX_SIZE 3 // Adjust this value based on your maximum size
 
-void printMatrix(float *matrix, int m_rows, int m_cols)
+void printMatrix(int n, double matrix[MAX_SIZE][MAX_SIZE + 1])
 {
-    for (int i = 0; i < m_rows * m_cols; i++)
+    for (int i = 0; i < n; i++)
     {
-
-        printf("%.2f ", matrix[i]);
-        if ((i + 1) % m_cols == 0)
+        for (int j = 0; j < n + 1; j++)
         {
-            printf("\n");
+            printf("%.2f\t", matrix[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+void forwardElimination(int n, double matrix[MAX_SIZE][MAX_SIZE + 1])
+{
+    for (int k = 0; k < n; k++)
+    {
+        // Pivot element
+        double pivot = matrix[k][k];
+
+        // Check if pivot is zero
+        if (pivot == 0)
+        {
+            // Find a row with non-zero element in the same column
+            int swapRow = -1;
+            for (int i = k + 1; i < n; i++)
+            {
+                if (matrix[i][k] != 0)
+                {
+                    swapRow = i;
+                    break;
+                }
+            }
+
+            // If no such row exists, the matrix is singular
+            if (swapRow == -1)
+            {
+                printf("The system has no unique solution.\n");
+                return;
+            }
+
+            // Swap rows
+            for (int j = 0; j < n + 1; j++)
+            {
+                double temp = matrix[k][j];
+                matrix[k][j] = matrix[swapRow][j];
+                matrix[swapRow][j] = temp;
+            }
+
+            // Update pivot
+            pivot = matrix[k][k];
+        }
+
+        // Elimination
+        for (int i = k + 1; i < n; i++)
+        {
+            double factor = matrix[i][k] / pivot;
+            for (int j = k; j < n + 1; j++)
+            {
+                matrix[i][j] -= factor * matrix[k][j];
+            }
         }
     }
 }
 
-int main()
+void backSubstitution(int n, double matrix[MAX_SIZE][MAX_SIZE + 1], double solution[MAX_SIZE])
 {
-    int m_rows, m_cols, i, j = 1, k = 1;
-    float pivot, ratio;
-    printf("Enter the number of rows and columns of the matrix: ");
-    scanf("%d%d", &m_rows, &m_cols);
-
-    float *aug_mat = malloc((m_rows * m_cols) * sizeof(float));
-
-    printf("Enter the values of augmented matrix: ");
-    for (i = 0; i < m_rows * m_cols; i++)
+    for (int i = n - 1; i >= 0; i--)
     {
-        printf("Enter the (%d, %d) element: ", j, k);
-        scanf("%f", aug_mat + i);
-        k++;
-        if ((i + 1) % m_cols == 0)
+        // Check if the row is all zeros
+        bool allZeros = true;
+        for (int j = 0; j < n; j++)
         {
-            k = 1;
-            j++;
-        }
-    }
-    for (i = 0, j = 0; i < m_rows * m_cols; i += m_cols, j++)
-    {
-        if (aug_mat[(i % m_cols + j) == 0])
-        {
-            printf("Pivot element can't be zero.");
-            exit(1);
-        }
-    }
-
-    for (i = 0; i < m_rows; i++)
-    {
-        pivot = aug_mat[i % m_cols + i];
-        for (j = 0; j < m_cols; j++)
-        {
-            if (i > j)
+            if (matrix[i][j] != 0)
             {
-                ratio = aug_mat[i * m_cols + j] / pivot;
-                for (k = i; k < m_cols; k++)
-                {
-                    aug_mat[j * m_cols + k] -= ratio * aug_mat[i]
-                }
+                allZeros = false;
+                break;
             }
         }
+
+        // If the row is all zeros
+        if (allZeros)
+        {
+            // If the last element is also zero, then there are infinite solutions
+            if (matrix[i][n] == 0)
+            {
+                printf("The system has infinite solutions.\n");
+                return;
+            }
+            // If the last element is not zero, then there is no solution
+            else
+            {
+                printf("The system has no solution.\n");
+                return;
+            }
+        }
+
+        solution[i] = matrix[i][n];
+        for (int j = i + 1; j < n; j++)
+        {
+            solution[i] -= matrix[i][j] * solution[j];
+        }
+        solution[i] /= matrix[i][i];
     }
-    printMatrix(aug_mat, m_rows, m_cols);
-    for (i = 0; i < m_rows * m_cols; i++)
+
+    // If we reach here, then the system has a unique solution
+    printf("The system has a unique solution.\n");
+}
+
+int main()
+{
+    int n = 3;
+
+    // printf("Enter the number of variables : ");
+    // scanf("%d", &n);
+
+    // double matrix[MAX_SIZE][MAX_SIZE + 1];
+    // for (int i = 0; i < n; i++)
+    // {
+    //     printf("Enter coefficients for equation %d (separated by space) : ", i + 1);
+    //     for (int j = 0; j < n + 1; j++)
+    //     {
+    //         scanf("%lf", &matrix[i][j]);
+    //     }
+    // }
+    double mat1[3][4] = {
+        {1, 4, -1, -5},
+        {1, 1, -6, -12},
+        {3, -1, -1, 4}};
+
+    double mat2[3][4] = {
+        {1, 3, 4, 8},
+        {2, 1, 2, 5},
+        {5, 0, 2, 7}};
+
+    double mat3[3][4] = {
+        {1, 1, 1, -3},
+        {3, 1, -2, -2},
+        {2, 4, 7, 7}};
+
+    double matrix[3][4] = {
+        {-5, 5, 0, 3},
+        {1, 0, 1, 1},
+        {0, 2, 1, 2}};
+
+    printf("Original augmented matrix:\n");
+    printMatrix(n, matrix);
+
+    forwardElimination(n, matrix);
+
+    printf("Augmented matrix after forward elimination:\n");
+    printMatrix(n, matrix);
+
+    double solution[MAX_SIZE];
+    backSubstitution(n, matrix, solution);
+
+    printf("Solution:\n");
+    for (int i = 0; i < n; i++)
     {
+        printf("x%d = %.2f\n", i + 1, solution[i]);
     }
 
     return 0;
